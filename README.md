@@ -1,6 +1,9 @@
 sfdx-hello-plugin
 =================
 
+This project fixes the bug in Salesforce DX `sfdx plugins:generate` by replacing the flagConfigs with the correct object syntax.
+
+---
 Hello!
 
 [![Version](https://img.shields.io/npm/v/sfdx-hello-plugin.svg)](https://npmjs.org/package/sfdx-hello-plugin)
