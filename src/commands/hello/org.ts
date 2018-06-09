@@ -26,8 +26,10 @@ export default class Org extends SfdxCommand {
 
   protected static flagsConfig = {
     // flag with a value (-n, --name=VALUE)
-    name: flags.string({char: 'n', description: messages.getMessage('nameFlagDescription')}),
-    force: flags.boolean({char: 'f', description: messages.getMessage('forceFlagDescription')})
+    // name: flags.string({char: 'n', description: messages.getMessage('nameFlagDescription')})
+    name: { char: 'n', type: 'string', description: 'name to print' },
+    // force: flags.boolean({char: 'f', description: messages.getMessage('forceFlagDescription')})
+    force: { char: 'f', type: 'boolean', description: 'force the command' }
   };
 
   // Comment this out if your command does not require an org username
