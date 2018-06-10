@@ -100,7 +100,7 @@ export default class Create extends Command {
     const template = 'Hello World'!
     return writeToFile(file, template).then(() => {
       // When the file was completely written
-      return `File created!`
+      this.log('File created')
     })
   }
 }
