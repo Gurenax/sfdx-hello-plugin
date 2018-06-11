@@ -2,18 +2,22 @@ import {flags, Command} from '@oclif/command';
 import {core, SfdxCommand} from '@salesforce/command';
 
 // File write
+const mkdirp = require('mkdirp')
 const FS = require('fs')
 const Util = require('util')
+const createDirectoryPromise = Util.promisify(mkdirp)
 const writeFilePromise = Util.promisify(FS.writeFile)
-const writeToFile = (filePath, code) => {
+const writeToFile = (filePath, contents) => {
   const date = new Date()
   const timestamp = date.toISOString()
-  return writeFilePromise(filePath, code)
+  return writeFilePromise(filePath, contents).then(() => `${filePath} created`)
 }
 const checkFileExists = (filePath) => {
   const result = FS.statSync(filePath)
   return result
 }
+const exec = Util.promisify(require('child_process').exec);
+
 
 // Initialize Messages with the current plugin directory
 core.Messages.importMessagesDirectory(__dirname);
@@ -96,11 +100,137 @@ export default class Create extends Command {
     // Return an object to be displayed with --json
     // return { orgId: this.org.getOrgId(), outputString };
 
-    const file = `hello.txt`
-    const template = 'Hello World'!
-    return writeToFile(file, template).then(() => {
-      // When the file was completely written
-      this.log('File created')
-    })
+    // const file = `hello.txt`
+    // const template = 'Hello World'!
+
+    const templateBabelConfig = `
+    {
+      "presets": ["env", "react", "stage-1"]
+    }
+    `
+
+    const templatePackageJsonConfig = `
+    {
+      "name": "hello-app",
+      "version": "1.0.0",
+      "main": "index.js",
+      "author": "",
+      "license": "MIT",
+      "scripts": {
+        "build": "webpack"
+      },
+      "devDependencies": {
+        "babel-core": "^6.26.3",
+        "babel-loader": "^7.1.4",
+        "babel-preset-env": "^1.7.0",
+        "webpack": "^4.10.2",
+        "webpack-cli": "^3.0.1"
+      },
+      "dependencies": {
+        "babel-preset-react": "^6.24.1",
+        "babel-preset-stage-1": "^6.24.1",
+        "react": "^16.4.0",
+        "react-dom": "^16.4.0"
+      }
+    }
+    `
+
+    const templateWebpackConfig = `
+      const path = require('path')
+      const webpack = require('webpack')
+      module.exports = {
+        mode: 'development',
+        entry: './src/index.js',
+        output: {
+          path: path.resolve(__dirname, 'build'),
+          filename: 'App.bundle.js'
+        },
+        module: {
+          rules: [
+            {
+              test: /\.js$/,
+              exclude: /node_modules/,
+              use: ['babel-loader'] // Loads .babelrc
+            }
+          ]
+        },
+        stats: {
+          colors: true
+        },
+        devtool: 'inline-source-map' // Uncomment in production
+      }
+    `
+
+    const templateIndex = `
+      import React from 'react'
+      import ReactDOM from 'react-dom'
+      import App from './components/App'
+      ReactDOM.render(<App />, document.getElementById('root'))
+    `
+
+    const templateApp = `
+    import React, { Component } from 'react'
+
+    class App extends Component {
+      render() {
+        return (
+          <div style={{ textAlign: 'center' }}>
+            <h1>
+              Hello World
+            </h1>
+          </div>
+        )
+      }
+    }
+
+    export default App
+    `
+    
+    const templateIndexHtml = `
+      <html>
+        <body>
+          <div id="root"></div>
+          <script src="./build/App.bundle.js"></script>
+        </body>
+      </html>
+    ` 
+    // mkdirp('src/components', err => {
+    //   if (err) {
+    //     console.error(err)
+    //     return
+    //   }
+    // })
+
+    // mkdirp('src/components', err => {
+    //   if (err) {
+    //     console.error(err)
+    //     return
+    //   }
+    // })
+    return createDirectoryPromise('src/components').then(() =>
+      Promise.all([
+        writeToFile('package.json', templatePackageJsonConfig),
+        writeToFile('webpack.config.js', templateWebpackConfig),
+        writeToFile('.babelrc', templateBabelConfig),
+        writeToFile('src/index.js', templateIndex),
+        writeToFile('src/components/App.js', templateApp),
+        writeToFile('index.html', templateIndexHtml),
+      ]).then(results => {
+        this.log(JSON.stringify(results))
+      }).then(async () => {
+        const { stdout, stderr } = await exec('yarn');
+        this.log('stdout:', stdout)
+        this.log('stderr:', stderr)
+      }).then(async () => {
+        const { stdout, stderr } = await exec('yarn build')
+        this.log('stdout:', stdout)
+        this.log('stderr:', stderr)
+      })
+    )
+
+    // return writeToFile('package.json', templatePackageJsonConfig).then(() => {
+    //   // When the file was completely written
+    //   this.log('File created')
+    // })
   }
 }
