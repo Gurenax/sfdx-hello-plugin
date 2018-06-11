@@ -2,22 +2,16 @@ import {flags, Command} from '@oclif/command';
 import {core, SfdxCommand} from '@salesforce/command';
 
 // File write
-const mkdirp = require('mkdirp')
 const FS = require('fs')
 const Util = require('util')
-const createDirectoryPromise = Util.promisify(mkdirp)
+const createDirectoryPromise = Util.promisify(require('mkdirp'))
 const writeFilePromise = Util.promisify(FS.writeFile)
 const writeToFile = (filePath, contents) => {
   const date = new Date()
   const timestamp = date.toISOString()
   return writeFilePromise(filePath, contents).then(() => `${filePath} created`)
 }
-const checkFileExists = (filePath) => {
-  const result = FS.statSync(filePath)
-  return result
-}
 const exec = Util.promisify(require('child_process').exec);
-
 
 // Initialize Messages with the current plugin directory
 core.Messages.importMessagesDirectory(__dirname);
@@ -55,54 +49,6 @@ export default class Create extends Command {
   protected static requiresProject = false;
 
   public async run(): Promise<any> { // tslint:disable-line:no-any
-    // const name = this.flags.name || 'world';
-
-    // this.org is guaranteed because requiresUsername=true, as opposed to supportsUsername
-    // const conn = this.org.getConnection();
-    // const query = 'Select Name, TrialExpirationDate from Organization';
-
-    // The type we are querying for
-    // interface Organization {
-    //   Name: string;
-    //   TrialExpirationDate: string;
-    // }
-
-    // Query the org
-    // const result = await conn.query<Organization>(query);
-
-    // Organization will always return one result, but this is an example of throwing an error
-    // The output and --json will automatically be handled for you.
-    // if (!result.records || result.records.length <= 0) {
-    //   throw new core.SfdxError(messages.getMessage('errorNoOrgResults', [this.org.getOrgId()]));
-    // }
-
-    // // Organization always only returns one result
-    // const orgName = result.records[0].Name;
-    // const trialExpirationDate = result.records[0].TrialExpirationDate;
-
-    // let outputString = `Hello ${name}! This is org: ${orgName}`;
-    // if (trialExpirationDate) {
-    //   const date = new Date(trialExpirationDate).toDateString();
-    //   outputString = `${outputString} and I will be around until ${date}!`;
-    // }
-    // this.ux.log(outputString);
-
-    // this.hubOrg is NOT guaranteed because supportsHubOrgUsername=true, as opposed to requiresHubOrgUsername.
-    // if (this.hubOrg) {
-    //   const hubOrgId = this.hubOrg.getOrgId();
-    //   this.ux.log(`My hub org id is: ${hubOrgId}`);
-    // }
-
-    // if (this.flags.force && this.args.file) {
-    //   this.ux.log(`You input --force and --file: ${this.args.file}`);
-    // }
-
-    // Return an object to be displayed with --json
-    // return { orgId: this.org.getOrgId(), outputString };
-
-    // const file = `hello.txt`
-    // const template = 'Hello World'!
-
     const templateBabelConfig = `
     {
       "presets": ["env", "react", "stage-1"]
@@ -194,19 +140,7 @@ export default class Create extends Command {
         </body>
       </html>
     ` 
-    // mkdirp('src/components', err => {
-    //   if (err) {
-    //     console.error(err)
-    //     return
-    //   }
-    // })
-
-    // mkdirp('src/components', err => {
-    //   if (err) {
-    //     console.error(err)
-    //     return
-    //   }
-    // })
+    
     return createDirectoryPromise('src/components').then(() =>
       Promise.all([
         writeToFile('package.json', templatePackageJsonConfig),
@@ -216,21 +150,19 @@ export default class Create extends Command {
         writeToFile('src/components/App.js', templateApp),
         writeToFile('index.html', templateIndexHtml),
       ]).then(results => {
+        // Output file creation
         this.log(JSON.stringify(results))
       }).then(async () => {
+        // Install packages
         const { stdout, stderr } = await exec('yarn');
         this.log('stdout:', stdout)
         this.log('stderr:', stderr)
       }).then(async () => {
+        // Run webpack
         const { stdout, stderr } = await exec('yarn build')
         this.log('stdout:', stdout)
         this.log('stderr:', stderr)
       })
     )
-
-    // return writeToFile('package.json', templatePackageJsonConfig).then(() => {
-    //   // When the file was completely written
-    //   this.log('File created')
-    // })
   }
 }
