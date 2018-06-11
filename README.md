@@ -25,7 +25,7 @@ $ npm install -g sfdx-hello-plugin
 $ sfdx-hello-plugin COMMAND
 running command...
 $ sfdx-hello-plugin (-v|--version|version)
-sfdx-hello-plugin/0.0.0 darwin-x64 node-v8.9.4
+sfdx-hello-plugin/0.0.0 darwin-x64 node-v10.3.0
 $ sfdx-hello-plugin --help [COMMAND]
 USAGE
   $ sfdx-hello-plugin COMMAND
