@@ -48,7 +48,6 @@ OPTIONS
 
 EXAMPLE
   $ sfdx file:create
-     File created!
 ```
 
 _See code: [src/commands/file/create.ts](https://github.com/Gurenax/sfdx-hello-plugin/blob/v0.0.0/src/commands/file/create.ts)_
