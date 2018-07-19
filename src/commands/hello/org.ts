@@ -22,7 +22,7 @@ export default class Org extends SfdxCommand {
   `
   ];
 
-  public static args = [{name: 'file'}];
+  public static args = [{name: 'file'}, {name: 'age'}];
 
   protected static flagsConfig = {
     // flag with a value (-n, --name=VALUE)
@@ -83,6 +83,9 @@ export default class Org extends SfdxCommand {
     if (this.flags.force && this.args.file) {
       this.ux.log(`You input --force and --file: ${this.args.file}`);
     }
+
+    this.ux.log(`file ${this.args.file}`);
+    this.ux.log(`age ${this.args.age}`);
 
     // Return an object to be displayed with --json
     return { orgId: this.org.getOrgId(), outputString };
