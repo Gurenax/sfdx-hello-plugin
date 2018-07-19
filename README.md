@@ -34,7 +34,7 @@ USAGE
 <!-- usagestop -->
 <!-- commands -->
 * [`sfdx-hello-plugin file:create [FILE]`](#sfdx-hello-plugin-filecreate-file)
-* [`sfdx-hello-plugin hello:org [FILE]`](#sfdx-hello-plugin-helloorg-file)
+* [`sfdx-hello-plugin hello:org [FILE] [AGE]`](#sfdx-hello-plugin-helloorg-file-age)
 
 ## `sfdx-hello-plugin file:create [FILE]`
 
@@ -52,13 +52,13 @@ EXAMPLE
 
 _See code: [src/commands/file/create.ts](https://github.com/Gurenax/sfdx-hello-plugin/blob/v0.0.0/src/commands/file/create.ts)_
 
-## `sfdx-hello-plugin hello:org [FILE]`
+## `sfdx-hello-plugin hello:org [FILE] [AGE]`
 
 Prints a greeting and your org id(s)!
 
 ```
 USAGE
-  $ sfdx-hello-plugin hello:org [FILE]
+  $ sfdx-hello-plugin hello:org [FILE] [AGE]
 
 OPTIONS
   -f, --force                                      force the command
